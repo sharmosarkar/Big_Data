@@ -1,0 +1,5 @@
+require(knitr)
+require(markdown)
+knit('AnalysisPredReport.Rmd', 'PredReport.md')
+markdownToHTML('PredReport.md', 'MyPredReport.html',option=c("use_xhml"))
+system("pandoc -s MyPredReport.html -o MyPredReport.pdf")

@@ -1,0 +1,67 @@
+---
+Title: "PREDICTION"
+Author: Sharmo & Sarita
+output: pdf_document
+---
+
+### Aim of the Assignment cum Project------------------------   
+The aim of this project/assignment is to predict the flight delays based on the concept of classification based on the class priors as "Flight Delayed" and "Flights Not Delayed"
+We use the concept of supervised modelling in which based on the train data, we train our system so that we can predict the value of required dependent variable for any unseen test dataset.  
+
++ Based on the learning from previous assignment i.e. Missed Connection on MapReduce Framework and Spark Framework, both on Scala and Python, we analyzed and decided to implement. This was done after our discussion with our Professor.
+
+***  IMPLEMENTATION :   
+***********************************************
+ We have used Random Forest Algorithm for predicting the ARR_DELAY field. If the ARR_DELAY was predicted as 1 then its a TRUE (predicting that the flight would be delayed) else FALSE (flight won't be delayed)
+ We have used Spark's Mllib library for this assignment. The following have been used for the following fields as the feature vector the use in Random Forest :::
+		+ DATE = 5
+        + ACTUAL_DEP_TIME     
+        + CRS_DEP_TIME    
+        + FLT_NO 
+        + ARR_DELAY 
+        + DEP_DELAY     
+        + DAY OF THE WEEK
+        + AL_CARRIER 
+        + ORIGIN 
+        + DESTINATION 
+        + DISTANCE 
+        + CRS_ELAPSED_TIME   
+        + DISANCE_GROUP
+
+The following are the tunables used in the Random forest :::
+		+ algorithm = Algo.Classification
+		+ impurity = Gini
+		+ maximumDepth = 3
+		+ treeCount = 200
+		+ featureSubsetStrategy = "sqrt"  
+
+For calculating the Accuracy  and the Confusion Matrix we have used the MulticlassMetrics of the Mllib library
+
+*** Results & Performance 
+ Our Implementation yeilds an Accuracy of 53.9 % when compared to the Validation Dataset 
+ Confusion Matrix ::
+	0			1
+ 0 1405663		1062120
+ 1 1192605 		1353731
+ 
+   True Positive : 1405663
+   False Positive : 1062120
+   True Negative : 1353731
+   False Negtive : 1192605
+   
+   (0 is positive , 1 is negative)
+   (0 is flight is delayed , 1 is flight is not delayed)
+   
+  Our code runs on local machine in 1.5 hour aprox and on EMR it takes 50mins (with 4 worker clusters) for the entire process of building the model and predicting the output.
+
+*** STEPS TO BE EXECUTED
+- Below is the sequence of rules to be followed from the make file to run the program, locally or Amazon AWS Spark framework
+
++ make jar
++ make runpred or runrout
++ make permission
++ make clean
++ make awspred or awsrout
++ make output
++ make report
+

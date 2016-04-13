@@ -1,0 +1,5 @@
+require(knitr)
+require(markdown)
+knit('AnalysisRoutReport.Rmd', 'RoutReport.md')
+markdownToHTML('RoutReport.md', 'MyRoutReport.html',option=c("use_xhml"))
+system("pandoc -s MyRoutReport.html -o MyRoutReport.pdf")
