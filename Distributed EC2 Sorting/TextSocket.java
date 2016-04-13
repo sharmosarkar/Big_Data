@@ -3,7 +3,7 @@ import java.net.*;
 import java.io.*;
 import java.util.LinkedList;
 
-// Author: Nat Tuck
+// Author: Sharmodeep Sarkar
 public class TextSocket  
 {
     final Socket sock;

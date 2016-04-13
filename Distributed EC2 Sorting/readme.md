@@ -1,11 +1,14 @@
-Author : Sarita,Sharmo,Ashish,Yogiraj
+Author : Sharmodeep,Ashish,Yogiraj,Sarita
 Assignment: 08 - Distributed EC2 Sorting
 Date: 04/1/2016
+
 JAVA File - SortNode.java
 	    FileChunkLoader.java (retrieves data from s3- distributed)
 	    TextSocket.java (path : socket/client/TextSocket/)
 	    WebClient.java (path : socket/client/WebClient/)
 	    WebServer.java (path : socket/client/WebServer/)
+	
+	
 Bash Scripts -
 	   start-cluster	  
 	   stop-cluster
@@ -22,6 +25,7 @@ Bash Scripts -
 	   get-output
 	   installjava.sh
 
+	   
 Note : For below bash scripts , user have to individually enter the key value pair for automation
 	startsort.sh
 	startExportToS3.sh
@@ -56,6 +60,8 @@ start-cluster {arg}
 This script creates the required number of EC2 instances and saves the list of instances onto a local file, out.txt
 Go through the Makefile to see the sequence of rules to be executed.
 
+
+
 ### AWS Configuration File 
 ############Common steps to be executed in order to generate the JAR file
 • make client-server 
@@ -67,6 +73,7 @@ Go through the Makefile to see the sequence of rules to be executed.
 ./get-output -> This gives the required output file from EC2 instances to our local machine
 ./stop-cluster
 #nodes stopped
+
 
 
 NOTE: Final output present on the localhost as : final.txt
@@ -90,6 +97,8 @@ n) Once Master node receives Acknowledgement signal from all the slaves, the Mas
 o) After receiving the acknowledgement from all the slaves, the Master then communicates a ACK signal to the client which is then responsible for closing the TCP connection.
 p) The final output i.e. top ten values of the required parameter “ dry bulb temp” is retrieved in the local file and the whole data file (sorted) is stored in the s3 bucket
 
+
+
 ##############################################################################
 OUTPUT (Top 10 values) :
 ##############################################################################
@@ -104,6 +113,8 @@ Record [wban=03866, date=19991215, time=0955, temp=201.0]
 Record [wban=14611, date=19991210, time=1855, temp=201.0]
 Record [wban=14780, date=19991207, time=1155, temp=201.0]
 ###############################################################################
+
+
 
 Time Taken to Sort data on M4.Large:
 m4.2xlarge (26 ECUs, 8 vCPUs, 2.4 GHz, Intel Xeon E5-2676v3, 32 GiB memory, EBS only)
@@ -121,6 +132,8 @@ We have implemented the concept of synchronization using threads while EC2 commu
 As seen from the output, increasing number of EC2 instances (sort nodes) decreases speed of execution,
 but that is not proportional since the data is stored in the heap for intermediate processing.
 ###############################################################################
+
+
 
 REFERENCES :
 
