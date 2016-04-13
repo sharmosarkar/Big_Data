@@ -1,6 +1,5 @@
 Author : Sharmodeep,Ashish,Yogiraj,Sarita
-Assignment: 08 - Distributed EC2 Sorting
-Date: 04/1/2016
+
 
 JAVA File - SortNode.java
 	    FileChunkLoader.java (retrieves data from s3- distributed)
