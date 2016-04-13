@@ -1,0 +1,15 @@
+# Author ::: Sharmo , Sarita
+
+# Parameter description 
+# $1-->>sorting column
+# $2-->>input bucket
+# $3-->>output bucket
+
+#Start the client
+java -jar client.jar $1 $2
+
+#copy output from ec2 clusters to s3
+./startExportTos3.sh $3
+
+# get the  top 10 results locally
+./get-output

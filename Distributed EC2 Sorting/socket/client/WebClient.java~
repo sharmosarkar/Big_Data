@@ -1,0 +1,74 @@
+package main;
+
+import java.io.*;
+import textsock.TextSocket;
+import java.net.*;
+
+public class WebClient {
+
+
+    public static void main(String[] args) throws Exception {
+
+                String scriptFilePaths = System.getProperty("user.dir");
+
+                // retrieve number of servers available and the master server
+                // master server is the first server in the instancesIPs.txt
+                BufferedReader br = new BufferedReader(new FileReader("instanceIPs.txt"));
+                String ips = br.readLine();
+                String[] ipList = ips.split("\t");
+
+                // Data Split 
+                int numberOfSplits = ipList.length;
+                System.out.println (numberOfSplits);
+                String target = new String(scriptFilePaths+"/splitFileList.sh "+numberOfSplits);
+                Runtime rt = Runtime.getRuntime();
+                Process proc = rt.exec(target);
+                proc.waitFor();
+                StringBuffer output = new StringBuffer();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                String line = "";                       
+                while ((line = reader.readLine())!= null) {
+                        output.append(line + "\n");
+                }
+                System.out.println("Data List Split for " + numberOfSplits + " servers ");
+
+
+                // Send Split Data List  to the Servers using scp
+                target = new String(scriptFilePaths+"/dataShipper.sh");
+                rt = Runtime.getRuntime();
+                proc = rt.exec(target);
+                proc.waitFor();
+                output = new StringBuffer();
+                reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                line = "";                       
+                while ((line = reader.readLine())!= null) {
+                        output.append(line + "\n");
+                }
+                System.out.println("Data List Sent to All the Servers ");
+
+
+                // Client Call
+                //System.out.println("Localhost");
+                // server port
+            	int port = 10001;
+                // server ip
+            	String ip = ipList[0];
+		//String ip = "ec2-52-38-125-21.us-west-2.compute.amazonaws.com";
+		System.out.println (ip);
+                //own ip
+                //String ip_own = args[2];
+                TextSocket conn = new TextSocket(ip, port);
+                //InetAddress ip_own = conn.getInetAddressNow();
+		String ip_own = "xx" ;
+                conn.putln("GET / HTTP/1.1 "+ip_own);
+                conn.putln("Host: "+ip);
+                conn.putln("");
+                
+                for (String resp : conn) {
+                    System.out.println(resp);
+                }
+
+                conn.close();
+
+    }
+}

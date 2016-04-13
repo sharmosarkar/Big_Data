@@ -1,0 +1,36 @@
+# Author : Sarita, Sharmodeep,Ashish,Yogi
+# This is the start-server scripts that builds the EC2 instances based on the argument value that represent the number of EC2 VMs
+# As recommended, we will proceed with m3.medium instances, but keeping that as a variable in the script we can further enhance the same.
+# Make sure we have a AWS CLI configured with appropriate AWS ID and secret key
+# We are providing a separate makessh.sh script that helps in authorizing and generating the key for ssh mechanism toany EC2 instance from your remote
+# machine
+# Once the instance is up and running, we retrieve the public DNS for each instances and scp the required files i.e server.jar, server.sh, node.jar and the
+# file containing the list of PublicIPs port details to each of the individual EC2 instances.
+# Once the files are copied to the appropriate instance, we run our server script that will run in background for each of the build instances so that each instance may
+# act as a server responding to a fixed port value, say 3002. (Note: This process executes in background for all instances, any client may now connect to the instances 
+# on an appropriate TCP call)
+
+keyValue = {enter your key value pair file (.pem file) with absolute path}
+
+noOfInstances=$1
+instanceNumber=0
+instancePrefix="Instance"
+aws ec2 run-instances --image-id ami-15fbb725 --count $noOfInstances --instance-type t1.micro --key-name sarita --security-groups my-sg > insid
+aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicDnsName" --output text > instanceIPs.txt
+#grep ec instanceIPs.txt > dnsList.txt
+ip=`grep ec instanceIPs.txt|sed 's/\t/ /g'`
+echo $ip > out.txt
+sleep 3m
+masterNode=`awk -F" " '{print $1}' out.txt`
+sleep 40
+scp -i $keyValue server.* ec2-user@$masterNode:/tmp/.
+sleep 10
+ssh -i $keyValue ec2-user@$masterNode "/tmp/server.sh < /dev/null > /tmp/mymasterlog 2>&1 &"
+sleep 5
+for line in $ip
+do
+	echo $line
+	scp -i $keyValue installjava.sh node.jar out.txt  ec2-user@$line:/tmp/.
+	sleep 1m
+	ssh -i $keyValue -t ec2-user@$line sudo /tmp/installjava.sh
+done

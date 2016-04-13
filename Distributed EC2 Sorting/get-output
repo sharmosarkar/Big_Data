@@ -1,0 +1,4 @@
+# This script retrieves the top ten values, for the variable " DRy Bulb Temp" -> sorted in ascending order
+# We can have a variable value for pem key
+finalIP=`awk 'NF>1{print $NF}' out.txt`
+ssh -i /usr/local/hadoop/MyKeyPair1.pem ec2-user@$finalIP tail -10 /tmp/output*.txt > final.txt
