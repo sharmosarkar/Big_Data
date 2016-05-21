@@ -1,0 +1,17 @@
+#Author : Sharmo Sarita
+
+# This script works on pseudo mode for creating the reducer output in pseudo mode
+
+suffix="folder"
+for f in /tmp/allMapperOutput/r*;
+do
+        echo "Processing $f file..";
+        folder=$f$suffix
+        mkdir $folder
+        while read p;
+        do
+                mv /tmp/allMapperOutput/final/$p $folder/.
+
+        done < $f
+done
+

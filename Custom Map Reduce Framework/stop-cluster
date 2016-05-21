@@ -1,0 +1,9 @@
+# Script that terminates all EC2 instances in our cluster.
+# Outputs the instance id along with the state of the cluster
+# Author : Sarita, Sharmo, Ashish, Yogiraj
+ids=`grep InstanceId insid|awk -F":" '{print $2}'|sed 's/,//g'|sed 's/"//g'`
+for id in $ids
+do
+	aws ec2 terminate-instances --instance-ids $id
+	echo "Terminating Instance ->", $id
+done

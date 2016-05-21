@@ -1,0 +1,36 @@
+# Author : Sarita Sharmo
+# This scripts after receiving the summary file from the createMapperOutput script,
+# and the output generated from the default partitioner java util, iterates for the
+# r0, r1, r... files and based on the number of reducers starts the reduce job on those 
+# respective slaves
+hadoopFramework=CustomMapReduce.jar
+keyValue=/tmp/KEY-VALUE
+suffix="folder"
+for f in /tmp/allMapperOutput/r*;
+do
+        echo "Processing $f file..";
+        folder=$f$suffix
+        mkdir $folder
+        while read p;
+        do
+                mv /tmp/allMapperOutput/final/$p $folder/.
+
+        done < $f
+done
+slaveIps=`cat /tmp/hostEntry.txt|cut -d' ' -f2-`
+fileNumber=0
+pre="r"
+post="folder"
+for slaveip in $slaveIps
+do
+        foldername=$pre$fileNumber$post
+        if [ ! -r /tmp/allMapperOutput/$foldername ]; then
+                echo "done"
+                exit 0
+        fi
+        echo $foldername
+        echo $slaveip
+        scp -i $keyValue -o StrictHostKeyChecking=no -r /tmp/allMapperOutput/$foldername /tmp/reducerInfo.txt ec2-user@$slaveip:/tmp/.
+        ssh -i $keyValue -o StrictHostKeyChecking=no ec2-user@$slaveip "/tmp/run-jar.sh $hadoopFramework custom.mr.ReducerDriver $fileNumber < /dev/null > /tmp/mylogfile 2>&1 &"
+        fileNumber=$(( fileNumber + 1))
+done

@@ -1,0 +1,20 @@
+#Author : Sharmo , Sarita
+#!/bin/bash
+# This script after receiving output from n map jobs, arranges the key in ascending order
+# arranges the key from n number of map job results to a final folder we can then be
+# shuffled based on the number of reducer tasks defined 
+# We have a custom hash function for shuffling the keys based on the output of this 
+# script, summary of all unique keys
+getAll=`cd /tmp/allMapperOutput && find /tmp/allMapperOutput -name *.txt|uniq`
+echo $getAll > /tmp/allMapperOutput/AllUniqueKeys
+mkdir -p /tmp/allMapperOutput/final
+chmod 777 /tmp/allMapperOutput/final
+for line in $getAll
+do
+	filename=`basename $line`
+	echo $filename
+	finalFile=${filename%.*}
+	cat /tmp/allMapperOutput/*/$filename|tr "\n" " " > /tmp/allMapperOutput/final/$finalFile
+done
+folder="final"
+ls /tmp/allMapperOutput/$folder > /tmp/allMapperOutput/summary

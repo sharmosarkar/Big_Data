@@ -1,0 +1,32 @@
+# Custom script that prepares start of our MR system.
+# It takes care of taking appropriate inputs i.e
+# 1) Jar file
+# 2) Input S3 bucket
+# 3) Output S3 bucket
+# Based on the role i.e. Slave or Master determines the class to be 
+# invoked
+#Depending on the given input, we determine whether the code has to be executed in pseudo mode or on AWS EC2 setup	
+# Author: Sarita, Sharmo
+runJar=$1
+class=${runJar%.*}
+inputBucket=$2
+outputBucket=$3
+if [[ $inputBucket == s3://* ]]  
+  then  
+	echo "Starting in AWS EMR mode"
+  	hadoopFramework=CustomMapReduce.jar
+	ip=`cat hostEntry.txt`
+	keyValue=KEY-VALUE
+	for line in $ip
+	do
+        	echo $line
+        	scp -i $keyValue -o StrictHostKeyChecking=no $hadoopFramework run-jar.sh config awsSetup.sh exportTos3.sh ec2-user@$line:/tmp/.
+        	ssh -i $keyValue -o StrictHostKeyChecking=no -t ec2-user@$line /tmp/awsSetup.sh > /tmp/mylog
+	done
+	master=`cat master.txt`
+	scp -i $keyValue -o StrictHostKeyChecking=no $runJar mergeMapperOutput createReducerInput startSlaves.sh dataShipper.sh splitFileList.sh ec2-user@$master:/tmp/.
+	ssh -i $keyValue -o StrictHostKeyChecking=no ec2-user@$master "/tmp/run-jar.sh $runJar $class $inputBucket $outputBucket < /dev/null > /tmp/mylogfile 2>&1 &"
+  else
+	echo "Starting in the pseudo Mode"
+  	java -cp  /tmp/$runJar $class $inputBucket $outputBucket
+fi

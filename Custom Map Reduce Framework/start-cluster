@@ -1,0 +1,35 @@
+# Cluster Architecture
+# Determines the number of EC2 instances based on received argument
+# Creates the host Entry for all the public DNS involved in our cluster
+# Authenicates those instances to enable communication among each other
+# Based on Master or Slave, distributes the required details
+# i.e. Master is aware of all slaves
+# All slaves are aware of the Master
+
+# Author: Sarita,Sharmo
+
+keyValue=KEY-VALUE-WITH-PATH
+keyPairName=KEY-VALUE-NAME
+securityGroupName=SECURITY-GROUP
+#imageId=ami-60b6c60a
+instanceType=t1.micro
+imageId=ami-15fbb725
+noOfInstances=$1
+instanceNumber=0
+instancePrefix="Instance"
+aws ec2 run-instances --image-id $imageId --count $noOfInstances --instance-type $instanceType --key-name $keyPairName --security-groups $securityGroupName >> insid
+aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicDnsName" --output text > instanceIPs.txt
+sleep 2m
+ip=`grep ec instanceIPs.txt|sed 's/\t/ /g'`
+echo $ip > hostEntry.txt
+masterNode=`awk -F" " '{print $1}' hostEntry.txt`
+echo $masterNode > master.txt
+slaves=`cut -d " " -f 2- hostEntry.txt`
+echo $slaves > slaves.txt
+scp -i $keyValue -o StrictHostKeyChecking=no hostEntry.txt ec2-user@$masterNode:/tmp/.
+scp -i $keyValue -o StrictHostKeyChecking=no $keyValue  ec2-user@$masterNode:/tmp/.
+for line in $slaves
+do
+	scp -i $keyValue -o StrictHostKeyChecking=no master.txt ec2-user@$line:/tmp/.
+	scp -i $keyValue -o StrictHostKeyChecking=no $keyValue ec2-user@$line:/tmp/.
+done
