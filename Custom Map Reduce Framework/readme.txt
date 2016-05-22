@@ -57,6 +57,7 @@ Note : For below bash scripts , user have to individually enter the key value pa
 	ExportTos3.sh
 	dataShipper.sh
 	start-cluster.sh
+	userConfig.sh
 
 
 Makefile - for AWS configuration and jar file creation
@@ -70,6 +71,7 @@ make pseudo (Runs the given jar in pseudo distributed mode using JAVA multithrea
 Make sure the following PATH variables are set before running:
 - JAVA_HOME
 - Also make sure that the aws configuration is done with required ssh setup done. Follow the script make ssh if the configuration is required
+- Enter all the required credentials in the userConfig.sh and run the script
 
 Directions to Execute:
 
